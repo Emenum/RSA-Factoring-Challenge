@@ -1,16 +1,13 @@
-#!/usr/bin/env python3
+# This is a Python script that factors large RSA numbers using the trial division method
+
 
 import sys
 import time
-from math import sqrt
+from math import sqrt, ceil
+
 
 # Define a function to check if a number is prime
 def is_prime(n):
-    '''Checks if a number is prime.
-    Args:
-        n: an input integer.
-        Return: True if the number is prime, False otherwise.
-    '''
     if n < 2:
         return False
     for i in range(2, int(sqrt(n)) + 1):
@@ -18,20 +15,15 @@ def is_prime(n):
             return False
     return True
 
+
 # Define a function to factor a single RSA number using the trial division method
 def factor_rsa_number(n):
-    '''Factors a single RSA number using the trial division method.
-    Args:
-        n: an input integer.
-    Return: A tuple of two prime factors.
-    '''
+    # Initialize an empty list to store the prime factors of n
     factors = []
-
     # Check if 2 is a factor of n
     while n % 2 == 0:
         factors.append(2)
         n //= 2
-
     # Check for odd prime factors up to sqrt(n)
     i = 3
     while i <= sqrt(n):
@@ -40,17 +32,14 @@ def factor_rsa_number(n):
             n //= i
         else:
             i += 2
-
     # If n is still greater than 2, it must be prime
     if n > 2:
         factors.append(n)
-
     # If only one factor is found, return it as p and n//p as q
     if len(factors) == 1:
         p = factors[0]
         q = n // p
         return (p, q)
-
     # If more than one factor is found, recursively factor each factor until all are prime
     else:
         pq = []
@@ -63,31 +52,33 @@ def factor_rsa_number(n):
                 pq.append(q)
         return tuple(pq)
 
-if __name__ == "__main__":
-    '''Reads the input file and factors each RSA number using the trial division method.
-    Prints the factorization for each number and the total execution time.
-    '''
-    if len(sys.argv) != 2:
-        print("Usage: ./rsa <file>")
-        exit()
 
-    input_file = sys.argv[1]
+# Read the input file name from the command line arguments
+input_file = sys.argv[1]
 
-    try:
-        with open(input_file, 'r') as f:
-            rsa_numbers = [int(line.strip()) for line in f.readlines()]
-    except FileNotFoundError:
-        print("Oops! File not found.")
-        exit()
 
-    start_time = time.time()
+# Read the RSA numbers from the input file
+with open(input_file, 'r') as f:
+    rsa_numbers = [int(line.strip()) for line in f.readlines()]
 
-    for n in rsa_numbers:
-        p, q = factor_rsa_number(n)
-        print(f"{n}={q}*{p}")
 
-    end_time = time.time()
-    exec_time = end_time - start_time
+# Start a timer to measure the execution time
+start_time = time.time()
 
-    print("Total execution time:", exec_time, "seconds")
+
+# Factor each RSA number in the file using the trial division method
+for n in rsa_numbers:
+    p, q = factor_rsa_number(n)
+    print(f"{n}={q}*{p}")
+
+
+# Stop the timer and calculate the execution time
+end_time = time.time()
+exec_time = end_time - start_time
+
+
+# Print the execution time in seconds
+print("Total execution time: ", exec_time, " seconds")
+
+
 
